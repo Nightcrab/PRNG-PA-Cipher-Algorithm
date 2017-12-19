@@ -48,7 +48,7 @@ function polyB(string, key, reverse)
         string = generateString() + string; //Add random string to beginning of plaintext.
     }
     string = string.split('');
-    for (j=0;j<string.length;j+=(key.length/3)) //Loop 
+    for (j=0;j<string.length;j+=(key.length/3)) //Loop to iterate through plaintext in sections equivalent to how many characters the key can cipher before needing to be regenerated.
     {
         if (!reverse)
         {
