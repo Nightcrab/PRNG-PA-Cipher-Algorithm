@@ -111,5 +111,9 @@ function subPolyB(string, key, j, reverse)
     return nstring;
 }
 
-console.log(polyB("Encrypt this text", "Key", false)); //Encrypt the input text
+//All keys must have a number of characters equal to a multiple of 3.
+//This is because every 3 characters of the key correlates to exactly one substitution alphabet that is applied to one character of plaintext.
+//This creates 68*68*68 or 314,432 possible alphabets for every character of plain/ciphertext.
+
+console.log(polyB("Encrypt this text", "Key", false)); //Encrypt the input text 
 console.log(polyB("MDZiB.6NA8nV'9iopn\".0JnFx9AwXgj\"aec", "Key", true)); //Decrypt the input text (be sure to backslash all quote marks)
