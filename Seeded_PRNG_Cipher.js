@@ -9,14 +9,15 @@ function rand(min, max)
 
 function generateString(returnlength)
 {
-	let randomnum = srand();
+    let randomnum = srand();
     let nstring = '';
     let length = Math.floor((randomnum())*20)+1;
     for (let i=0;i<length;i++)
     {
     	nstring += alphabetplus[rand(0, alphabetplus.length)];
     }
-    return nstring+".";
+    return nstring+"."; //Function to generate a string of random content and length, which is added to the beginning of every message.
+                        //This should prevent being able to identify correlation between messages that start with the same or similar sections of text. 
 }
 
 String.prototype.shuffle = function (seed) 
@@ -32,7 +33,8 @@ String.prototype.shuffle = function (seed)
         a[i] = a[j];
         a[j] = tmp;
     }
-    return a.join("");
+    return a.join(""); //Randomly shuffle an alphabet using the Fisher-Yates Shuffle algorithm (any shuffling algorithm can be used in its place).
+                       //The shuffle is determined by a seeded pseudo-random number using a section of the key as a seed.
 }
 
 function polyB(string, key, reverse)
@@ -43,10 +45,10 @@ function polyB(string, key, reverse)
     let okey = key.slice(0);
     if (!reverse)
     {
-        string = generateString() + string;
+        string = generateString() + string; //Add random string to beginning of plaintext.
     }
     string = string.split('');
-    for (j=0;j<string.length;j+=(key.length/3))
+    for (j=0;j<string.length;j+=(key.length/3)) //Loop 
     {
         if (!reverse)
         {
@@ -59,7 +61,7 @@ function polyB(string, key, reverse)
         nkey = '';
         for (let i = 0 ; i < key.length ; i += (key.length/3))
         {
-            nkey += subPolyB(key.slice(0).join(''), key.slice(0).reverse().join(''), i);
+            nkey += PolyB(key.slice(0).join(''), key.slice(0).reverse().join(''), false); //Apply cipher to the key (as plaintext) using the key backwards as a key.
         }
         console.log("key was ciphered : "+key.slice(0).join('')+" : "+nkey);
         key = nkey.split('');
@@ -68,7 +70,7 @@ function polyB(string, key, reverse)
             return "key has repeated";
         }
     }
-    return nstring;
+    return nstring; //return ciphertext
 }
 
 function subPolyB(string, key, j, reverse)
