@@ -1,5 +1,11 @@
-var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! ".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for maximum security
+var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! -=()\n\r{}><:;`~@#$%&*|[]".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for maximum security
 var srand = require("seedrandom"); //requires davidbao's seedrandom Node module, found at https://www.npmjs.com/package/seedrandom
+var fs = require('fs');
+
+require.extensions['.txt'] = function (module, filename) 
+{
+    module.exports = fs.readFileSync(filename, 'utf8');
+};
 
 function rand(min, max)
 {
@@ -7,17 +13,31 @@ function rand(min, max)
 	return Math.floor(randomnum() * max) + min;  
 }
 
-function generateString(returnlength)
+function cleanString(string, alphabet)
+{
+    let reg = new RegExp("[^"+alphabet+"]", "g");
+    string = string.replace(/[…]/g, '...');
+    string = string.replace(/[”]/g, '"');
+    return string.replace(reg, '');
+}
+
+function generateString(Length)
 {
     let randomnum = srand();
     let nstring = '';
-    let length = Math.floor((randomnum())*20)+1;
+    let length = Math.floor((randomnum())*20)+1; //20 can be replaced with any number, depending on how long you want your
+	                                         //randomised prefix to be. Longer is generally better, as it creates
+	                                         //more possible ciphertexts for any plaintext which increases effectiveness.
+    if (Length != undefined)
+    {
+        length = Length;
+    }
     for (let i=0;i<length;i++)
     {
     	nstring += alphabetplus[rand(0, alphabetplus.length)];
     }
-    return nstring+"."; //Function to generate a string of random content and length, which is added to the beginning of every message.
-                        //This should prevent being able to identify correlation between messages that start with the same or similar sections of text. 
+    return nstring+".";//Function to generate a string of random content and length, which is added to the beginning of every message.
+                       //This should prevent being able to identify correlation between messages that start with the same or similar sections of text. 
 }
 
 String.prototype.shuffle = function (seed) 
@@ -41,18 +61,20 @@ function polyB(string, key, reverse)
 {
     let nstring = '';
     let nkey = '';
+    string = cleanString(string, alphabetplus.slice(0).join(''));
     key = key.split('');
     let okey = key.slice(0);
+    let iterations = 0;
     if (!reverse)
     {
         string = generateString() + string; //Add random string to beginning of plaintext.
     }
     string = string.split('');
-    for (j=0;j<string.length;j+=(key.length/3)) //Loop to iterate through plaintext in sections equivalent to how many characters the key can cipher before needing to be regenerated.
+    for (let j=0;j<string.length;j+=(key.length/3)) //Loop to iterate through plaintext in sections equivalent to how many characters the key can cipher before needing to be regenerated.
     {
         if (!reverse)
         {
-            nstring += subPolyB(string, key, j);
+            nstring += subPolyB(string, key, j); 
         }
         else
         {
@@ -64,13 +86,15 @@ function polyB(string, key, reverse)
             nkey += subPolyB(key.slice(0).join(''), key.slice(0).reverse().join(''), i); //Apply cipher to the key (as plaintext) using the key backwards as a key.
         }
         console.log("key was ciphered : "+key.slice(0).join('')+" : "+nkey);
+        console.log(key.slice(0).join('')+" : "+okey.slice(0).join('')+" : "+iterations);
         key = nkey.split('');
-        if (key == okey)
+        iterations += 1;
+        if (key.slice(0).join('') == okey.slice(0).join(''))
         {
-            return "key has repeated";
+            return "KEY HAS REPEATED AFTER "+iterations+" ITERATIONS!";
         }
     }
-    return nstring; //return ciphertext
+    return nstring;
 }
 
 function subPolyB(string, key, j, reverse)
@@ -113,7 +137,7 @@ function subPolyB(string, key, j, reverse)
 
 //All keys must have a number of characters equal to a multiple of 3.
 //This is because every 3 characters of the key correlates to exactly one substitution alphabet that is applied to one character of plaintext.
-//This creates 68*68*68 or 314,432 possible alphabets for every character of plain/ciphertext.
+//This creates 87^3 or 658,503 possible alphabets for every character of plain/ciphertext.
 
-console.log(polyB("Encrypt this text", "Key", false)); //Encrypt the input text 
-console.log(polyB("MDZiB.6NA8nV'9iopn\".0JnFx9AwXgj\"aec", "Key", true)); //Decrypt the input text (be sure to backslash all quote marks)
+fs.writeFileSync("encrypted.txt",polyB(require('plaintext.txt'), "D33Qu3C31", false)); //Encrypt the input .txt
+fs.writeFileSync("decrypted.txt",polyB(require('ciphertext.txt'), "D33Qu3C31", true)); //Decrypt the input .txt
