@@ -62,14 +62,12 @@ function polyB(string, key, reverse)
     let nstring = '';
     let nkey = '';
     string = cleanString(string, alphabetplus.slice(0).join(''));
-    key = key.split('');
-    let okey = key.slice(0);
+    let okey = key;
     let iterations = 0;
     if (!reverse)
     {
         string = generateString() + string; //Add random string to beginning of plaintext.
     }
-    string = string.split('');
     for (let j=0;j<string.length;j+=(key.length/3)) //Loop to iterate through plaintext in sections equivalent to how many characters the key can cipher before needing to be regenerated.
     {
         if (!reverse)
@@ -83,13 +81,11 @@ function polyB(string, key, reverse)
         nkey = '';
         for (let i = 0 ; i < key.length ; i += (key.length/3))
         {
-            nkey += subPolyB(key.slice(0).join(''), key.slice(0).reverse().join(''), i); //Apply cipher to the key (as plaintext) using the key backwards as a key.
+            nkey += subPolyB(key., key.split('').reverse().join(''), i); //Apply cipher to the key (as plaintext) using the key backwards as a key.
         }
-        console.log("key was ciphered : "+key.slice(0).join('')+" : "+nkey);
-        console.log(key.slice(0).join('')+" : "+okey.slice(0).join('')+" : "+iterations);
-        key = nkey.split('');
+        console.log("key was ciphered : "+key+" : "+nkey);
         iterations += 1;
-        if (key.slice(0).join('') == okey.slice(0).join(''))
+        if (key == okey)
         {
             return "KEY HAS REPEATED AFTER "+iterations+" ITERATIONS!";
         }
