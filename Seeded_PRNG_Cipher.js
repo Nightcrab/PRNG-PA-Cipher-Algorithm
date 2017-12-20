@@ -84,6 +84,7 @@ function polyB(string, key, reverse)
             nkey += subPolyB(key., key.split('').reverse().join(''), i); //Apply cipher to the key (as plaintext) using the key backwards as a key.
         }
         console.log("key was ciphered : "+key+" : "+nkey);
+	key = nkey;
         iterations += 1;
         if (key == okey)
         {
