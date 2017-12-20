@@ -18,7 +18,7 @@ function cleanString(string, alphabet)
     let reg = new RegExp("[^"+alphabet+"]", "g");
     string = string.replace(/[…]/g, '...');
     string = string.replace(/[”]/g, '"');
-    return string.replace(reg, '');
+    return string.replace(reg, ''); //function to remove characters that aren't in the input alphabet - mainly targeted at problematic UTF-8 characters that tend to break the decryption process.
 }
 
 function generateString(Length)
