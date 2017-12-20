@@ -7,6 +7,22 @@ require.extensions['.txt'] = function (module, filename)
     module.exports = fs.readFileSync(filename, 'utf8');
 };
 
+function preCalcKeys(key, amount)
+{
+    let nkey = '';
+    for (n=0;n<amount;n++)
+    {
+        for (let i = 0 ; i < key.length ; i += (key.length/3))
+        {
+            nkey += subPolyB(key, key.split('').reverse().join(''), i);
+        }
+        key = nkey;
+        keys.push(key);
+        nkey = '';
+    }
+    fs.writeFileSync("./keys.json", JSON.stringify(keys));
+}
+
 function rand(min, max)
 {
     let randomnum = srand();
@@ -57,7 +73,7 @@ String.prototype.shuffle = function (seed)
                        //The shuffle is determined by a seeded pseudo-random number using a section of the key as a seed.
 }
 
-function polyB(string, key, reverse)
+function polyB(string, key, reverse, usePreCalc)
 {
     let nstring = '';
     let nkey = '';
@@ -70,26 +86,26 @@ function polyB(string, key, reverse)
     }
     for (let j=0;j<string.length;j+=(key.length/3)) //Loop to iterate through plaintext in sections equivalent to how many characters the key can cipher before needing to be regenerated.
     {
-        if (!reverse)
+         if (!reverse)
         {
-            nstring += subPolyB(string, key, j); 
+            nstring += subPolyB(string, key, j);
         }
         else
         {
             nstring += subPolyB(string, key, j, true);
         }
         nkey = '';
+        iterations += 1;
+        if (usePreCalc)
+        {
+            key = keys[j/(key.length/3)];
+            continue;
+        }
         for (let i = 0 ; i < key.length ; i += (key.length/3))
         {
-            nkey += subPolyB(key., key.split('').reverse().join(''), i); //Apply cipher to the key (as plaintext) using the key backwards as a key.
+            nkey += subPolyB(key, key.split('').reverse().join(''), i);
         }
-        console.log("key was ciphered : "+key+" : "+nkey);
-	key = nkey;
-        iterations += 1;
-        if (key == okey)
-        {
-            return "KEY HAS REPEATED AFTER "+iterations+" ITERATIONS!";
-        }
+        key = nkey;
     }
     return nstring;
 }
@@ -136,5 +152,7 @@ function subPolyB(string, key, j, reverse)
 //This is because every 3 characters of the key correlates to exactly one substitution alphabet that is applied to one character of plaintext.
 //This creates 91^3 or 753,571 possible alphabets for every character of plain/ciphertext.
 
-fs.writeFileSync("encrypted.txt",polyB(require('./plaintext.txt'), "Key", false)); //Encrypt the input .txt
-fs.writeFileSync("decrypted.txt",polyB(require('./ciphertext.txt'), "Key", true)); //Decrypt the input .txt
+preCalcKeys("Key", 100000); //This should only be run once with the key of your choice. If you're planning on using the same key many times, pre-calculating them will greatly optimise the encryption/decryption time.
+
+fs.writeFileSync("encrypted.txt", polyB(require('./plaintext.txt'), "Key", false, true)); //Encrypt the input .txt
+fs.writeFileSync("decrypted.txt", polyB(require('./ciphertext.txt'), "Key", true, true)); //Decrypt the input .txt
