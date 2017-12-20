@@ -1,6 +1,7 @@
 var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! -=()\n\r{}><:;`~@#$%&*|[]".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for optimal security
 var srand = require("seedrandom"); //requires davidbao's seedrandom Node module, found at https://www.npmjs.com/package/seedrandom
 var fs = require('fs');
+var keys = require("./keys.json");
 
 require.extensions['.txt'] = function (module, filename) 
 {
@@ -152,7 +153,7 @@ function subPolyB(string, key, j, reverse)
 //This is because every 3 characters of the key correlates to exactly one substitution alphabet that is applied to one character of plaintext.
 //This creates 91^3 or 753,571 possible alphabets for every character of plain/ciphertext.
 
-preCalcKeys("Key", 100000); //This should only be run once with the key of your choice. If you're planning on using the same key many times, pre-calculating them will greatly optimise the encryption/decryption time.
-
+preCalcKeys("Key", 100000); //This should only be run once with the key of your choice. If you're planning on using the same key many times, pre-calculating them will greatly optimise the encryption/decryption time. 
+                            //All messages decrypted/encrypted need to have a character length that is less than the second parameter * key_length/3 otherwise it will run out of keys.
 fs.writeFileSync("encrypted.txt", polyB(require('./plaintext.txt'), "Key", false, true)); //Encrypt the input .txt
 fs.writeFileSync("decrypted.txt", polyB(require('./ciphertext.txt'), "Key", true, true)); //Decrypt the input .txt
