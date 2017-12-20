@@ -1,4 +1,4 @@
-var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! -=()\n\r{}><:;`~@#$%&*|[]".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for maximum security
+var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! -=()\n\r{}><:;`~@#$%&*|[]".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for the best security
 var srand = require("seedrandom"); //requires davidbao's seedrandom Node module, found at https://www.npmjs.com/package/seedrandom
 var fs = require('fs');
 
@@ -9,8 +9,8 @@ require.extensions['.txt'] = function (module, filename)
 
 function rand(min, max)
 {
-	let randomnum = srand();
-	return Math.floor(randomnum() * max) + min;  
+    let randomnum = srand();
+    return Math.floor(randomnum() * max) + min;  
 }
 
 function cleanString(string, alphabet)
