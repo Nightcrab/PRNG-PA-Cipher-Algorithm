@@ -139,5 +139,5 @@ function subPolyB(string, key, j, reverse)
 //This is because every 3 characters of the key correlates to exactly one substitution alphabet that is applied to one character of plaintext.
 //This creates 87^3 or 658,503 possible alphabets for every character of plain/ciphertext.
 
-fs.writeFileSync("encrypted.txt",polyB(require('plaintext.txt'), "D33Qu3C31", false)); //Encrypt the input .txt
-fs.writeFileSync("decrypted.txt",polyB(require('ciphertext.txt'), "D33Qu3C31", true)); //Decrypt the input .txt
+fs.writeFileSync("encrypted.txt",polyB(require('plaintext.txt'), "Key", false)); //Encrypt the input .txt
+fs.writeFileSync("decrypted.txt",polyB(require('ciphertext.txt'), "Key", true)); //Decrypt the input .txt
