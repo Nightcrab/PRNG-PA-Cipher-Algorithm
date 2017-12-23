@@ -1,4 +1,4 @@
-var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,.'\"! -=()\n\r{}><:;`~@#$%&*|[]".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for optimal security
+var alphabetplus = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\,\.\'\"\!\ \-\=\(\)\n\r\{\}\>\<\:\;\`\~\@\#\%\&\*\|".split(''); //Keys and text to encrypt/decrypt should use characters from this alphabet for optimal security
 var srand = require("seedrandom"); //requires davidbao's seedrandom Node module, found at https://www.npmjs.com/package/seedrandom
 var fs = require('fs');
 var keys = require("./keys.json");
@@ -10,6 +10,7 @@ require.extensions['.txt'] = function (module, filename)
 
 function preCalcKeys(key, amount)
 {
+    keys = [];
     let nkey = '';
     for (n=0;n<amount;n++)
     {
@@ -35,6 +36,7 @@ function cleanString(string, alphabet)
     let reg = new RegExp("[^"+alphabet+"]", "g");
     string = string.replace(/[…]/g, '...');
     string = string.replace(/[”]/g, '"');
+    string = string.replace(/[’]/g, "'");
     return string.replace(reg, ''); //function to remove characters that aren't in the input alphabet - mainly targeted at problematic UTF-8 characters that tend to break the decryption process.
 }
 
@@ -154,6 +156,6 @@ function subPolyB(string, key, j, reverse)
 //This creates 91^3 or 753,571 possible alphabets for every character of plain/ciphertext.
 
 preCalcKeys("Key", 100000); //This should only be run once with the key of your choice. If you're planning on using the same key many times, pre-calculating them will greatly optimise the encryption/decryption time. 
-                            //All messages decrypted/encrypted need to have a character length that is less than the second parameter * key_length/3 otherwise it will run out of keys.
+                            //All messages decrypted/encrypted need to have a character length that is less than the second parameter * key_length/3 otherwise it will run out of keys. When set to 10,000 and using a 9-character key, the program will be able to encrypt/decrypt messages with up to 30,000 characters.
 fs.writeFileSync("encrypted.txt", polyB(require('./plaintext.txt'), "Key", false, true)); //Encrypt the input .txt
 fs.writeFileSync("decrypted.txt", polyB(require('./ciphertext.txt'), "Key", true, true)); //Decrypt the input .txt
